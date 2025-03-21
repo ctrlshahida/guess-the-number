@@ -109,7 +109,7 @@ fun TitleScreen(modifier: Modifier = Modifier) {
         TextField(
             value = userInput.value,
             onValueChange = { userInput.value = it },
-            label = { Text("Enter a number between 1 and 100") },
+            label = { Text("Enter your number here") },
             singleLine = true,
             modifier = Modifier
                 .fillMaxWidth()
@@ -120,10 +120,8 @@ fun TitleScreen(modifier: Modifier = Modifier) {
         Button(
             onClick = {
                 val inputNumber = userInput.value.text.toIntOrNull()
-
                 if (inputNumber != null && inputNumber in 1..100) {
                     val targetNumber = game.getRandomNumber()
-
                     feedback.value = when {
                         inputNumber < targetNumber -> "Too low! Try again."
                         inputNumber > targetNumber -> "Too high! Try again."
@@ -133,28 +131,23 @@ fun TitleScreen(modifier: Modifier = Modifier) {
                     feedback.value = "Invalid input! Enter a number between 1 and 100."
                 }
             },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFF6A5ACD),
+                contentColor = Color.White
+            ),
             modifier = Modifier.padding(bottom = 20.dp)
         ) {
-            Text(text = "Submit Guess", style = TextStyle(fontSize = 20.sp))
+            Text(
+                text = "Submit Guess",
+                style = TextStyle(
+                    fontSize = 20.sp,
+                    fontFamily = customFontFamily,
+                    fontWeight = FontWeight.SemiBold
+                )
+            )
         }
-
-        // Display feedback message
-        Text(
-            text = feedback.value,
-            style = TextStyle(
-                fontFamily = customFontFamily,
-                color = Color.White,
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold
-            ),
-            modifier = Modifier.padding(top = 10.dp)
-        )
     }
 }
-
-
-
-
 
 @Preview(showBackground = true)
 @Composable
