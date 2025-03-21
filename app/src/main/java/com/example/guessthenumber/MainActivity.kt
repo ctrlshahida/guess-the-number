@@ -26,10 +26,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.material3.TextField
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
-
-
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,12 +60,14 @@ val customFontFamily = FontFamily(
 
 @Composable
 fun TitleScreen(modifier: Modifier = Modifier) {
-    val game = remember { NumberGame() } // Create instance of NumberGame
+    val game = remember { mutableStateOf(NumberGame()) }
     val userInput = remember { mutableStateOf(TextFieldValue()) }
-    val feedback = remember { mutableStateOf("") } // To show guess feedback
+    val feedback = remember { mutableStateOf("") }
 
-    // Generate a random number when the game starts
-    remember { game.generateRandomNumber() }
+    // Ensure a number is set when the screen is first composed
+    LaunchedEffect(Unit) {
+        game.value.generateRandomNumber()
+    }
 
     Column(
         modifier = Modifier
@@ -121,11 +122,14 @@ fun TitleScreen(modifier: Modifier = Modifier) {
             onClick = {
                 val inputNumber = userInput.value.text.toIntOrNull()
                 if (inputNumber != null && inputNumber in 1..100) {
-                    val targetNumber = game.getRandomNumber()
+                    val targetNumber = game.value.getRandomNumber()
                     feedback.value = when {
                         inputNumber < targetNumber -> "Too low! Try again."
                         inputNumber > targetNumber -> "Too high! Try again."
-                        else -> "Congratulations! You guessed it!"
+                        else -> {
+                            game.value.generateRandomNumber() // Reset number on correct guess
+                            "Congratulations! You guessed it! New number generated."
+                        }
                     }
                 } else {
                     feedback.value = "Invalid input! Enter a number between 1 and 100."
@@ -146,6 +150,18 @@ fun TitleScreen(modifier: Modifier = Modifier) {
                 )
             )
         }
+
+        // Display feedback
+        Text(
+            text = feedback.value,
+            style = TextStyle(
+                fontFamily = customFontFamily,
+                color = Color.White,
+                fontSize = 24.sp,
+                fontWeight = FontWeight.SemiBold
+            ),
+            modifier = Modifier.padding(top = 20.dp)
+        )
     }
 }
 
