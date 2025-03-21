@@ -158,7 +158,6 @@ fun TitleScreen(modifier: Modifier = Modifier) {
                 fontFamily = customFontFamily,
                 color = Color.White,
                 fontSize = 24.sp,
-                fontWeight = FontWeight.SemiBold
             ),
             modifier = Modifier.padding(top = 20.dp)
         )
