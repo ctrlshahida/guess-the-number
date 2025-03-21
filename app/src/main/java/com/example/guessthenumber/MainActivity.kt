@@ -39,12 +39,12 @@ class MainActivity : ComponentActivity() {
             GuessTheNumberTheme {
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
-                    containerColor = Color(0xFF1B1B1B) // Ensures black background
+                    containerColor = Color(0xFF1B1B1B)
                 ) { innerPadding ->
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
-                            .background(Color(0xFF1B1B1B)) // Reinforce black background
+                            .background(Color(0xFF1B1B1B))
                             .padding(innerPadding)
                     ) {
                         TitleScreen()
@@ -61,7 +61,12 @@ val customFontFamily = FontFamily(
 
 @Composable
 fun TitleScreen(modifier: Modifier = Modifier) {
+    val game = remember { NumberGame() } // Create instance of NumberGame
     val userInput = remember { mutableStateOf(TextFieldValue()) }
+    val feedback = remember { mutableStateOf("") } // To show guess feedback
+
+    // Generate a random number when the game starts
+    remember { game.generateRandomNumber() }
 
     Column(
         modifier = Modifier
@@ -115,18 +120,41 @@ fun TitleScreen(modifier: Modifier = Modifier) {
         Button(
             onClick = {
                 val inputNumber = userInput.value.text.toIntOrNull()
+
                 if (inputNumber != null && inputNumber in 1..100) {
-                    // code : Handle guess right or wrong
+                    val targetNumber = game.getRandomNumber()
+
+                    feedback.value = when {
+                        inputNumber < targetNumber -> "Too low! Try again."
+                        inputNumber > targetNumber -> "Too high! Try again."
+                        else -> "Congratulations! You guessed it!"
+                    }
                 } else {
-                    // code : Handle errors
+                    feedback.value = "Invalid input! Enter a number between 1 and 100."
                 }
             },
             modifier = Modifier.padding(bottom = 20.dp)
         ) {
             Text(text = "Submit Guess", style = TextStyle(fontSize = 20.sp))
         }
+
+        // Display feedback message
+        Text(
+            text = feedback.value,
+            style = TextStyle(
+                fontFamily = customFontFamily,
+                color = Color.White,
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold
+            ),
+            modifier = Modifier.padding(top = 10.dp)
+        )
     }
 }
+
+
+
+
 
 @Preview(showBackground = true)
 @Composable
